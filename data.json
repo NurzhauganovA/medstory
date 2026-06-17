@@ -1,0 +1,220 @@
+{
+    "Anamnesis": {
+      "PatientWords": "Все прекрасно",
+      "OnsetReason": "С Нового Года",
+      "LastExacerbation": "В новогднюю чонь, когда родился",
+      "Pain": {
+        "IsPresent": false,
+        "Duration": "Хроническая",
+        "Intensity": "Нестерпимая",
+        "Localization": [
+          "Голова",
+          "Ягодица правая",
+          "Бедро правое",
+          "Голень левая"
+        ],
+        "Character": [
+          "Ноющая",
+          "Опоясывающая",
+          "Распирающая"
+        ],
+        "Frequency": [
+          "Периодическая",
+          "Не болит"
+        ],
+        "Provokes": [
+          "Покой",
+          "Погода",
+          "Другое"
+        ],
+        "ProvokesOther": "вчера",
+        "Relieves": [
+          "Физические упражнения",
+          "Физиолечение",
+          "Другое"
+        ],
+        "RelievesOther": "сегодня"
+      },
+      "Numbness": [
+        "Предплечье правое",
+        "Кисть правая",
+        "Голень левая"
+      ],
+      "CurrentState": [
+        "Подострое (1–2  месяца)"
+      ],
+      "PreviousTreatment": [
+        "Массаж",
+        "Блокады",
+        "Медикаментозное лечение",
+        "Не лечился"
+      ],
+      "Vitae": {
+        "DispensaryRegistration": "Не состоит",
+        "DoctorsContacts": "Контакты врачей",
+        "BloodType": "Первая (1) плюс +",
+        "ConcomitantDiseases": "Нет",
+        "PastTraumasSurgeries": "Ключица",
+        "PreventiveMeasures": "Нет",
+        "Anthropometry": "177, 67",
+        "Allergies": "Нет",
+        "BadHabits": "Вредных привычек нет"
+      }
+    },
+    "Diagnostics": {
+      "Hypertonus": [
+        "ГОП",
+        "Ягодичные оба",
+        "Бедро оба"
+      ],
+      "Hypotonus": [
+        "ПОП",
+        "Плечо оба",
+        "Бедро оба"
+      ],
+      "Rigidity": [
+        "ПОП",
+        "Плечо правое",
+        "Бедро оба"
+      ],
+      "LassegRight": "12",
+      "LassegLeft": "12",
+      "LerreyTest": "21",
+      "OtherSpineTests": "Другие тесты позвоночника:\r\n",
+      "KneeFlexionLeft": "11",
+      "KneeFlexionRight": "11",
+      "KneeExtensionLeft": "22",
+      "KneeExtensionRight": "22",
+      "HipFlexion": "33",
+      "HipExtRotation": "33",
+      "HipIntRotation": "33",
+      "HipAdduction": "33",
+      "HipAbduction": "33",
+      "ShoulderAbduction": "32",
+      "ShoulderFlexion": "33",
+      "ShoulderExtension": "34",
+      "ShoulderSupination": "35",
+      "ShoulderPronation": "36",
+      "ShoulderHorizAdduction": "221",
+      "ShoulderHorizAbduction": "11",
+      "AdditionalTests": [
+        {
+          "MuscleJoint": "Сустав",
+          "TestValue": "12"
+        },
+        {
+          "MuscleJoint": "Мышца",
+          "TestValue": "21"
+        },
+        {
+          "MuscleJoint": "Сустав",
+          "TestValue": "23"
+        },
+        {
+          "MuscleJoint": "Мышца",
+          "TestValue": "32"
+        },
+        {
+          "MuscleJoint": "",
+          "TestValue": ""
+        }
+      ],
+      "WalkingPattern": "Норма",
+      "PainVAS": 7,
+      "QualityOfLife": 7
+    },
+    "Diagnosis": {
+      "ICD10List": [
+        {
+          "Code": "",
+          "Description": " -  - M19.8 - Другой уточненный артроз (Суставы)"
+        },
+        {
+          "Code": "",
+          "Description": " -  - M47.8 - Другие спондилезы (фасеточный артроз, ДБС)"
+        }
+      ],
+      "FullDescription": "нос чист\r\nкровь тоже",
+      "Mri": {
+        "HerniaType": "Протрузия",
+        "Segments": [
+          {
+            "SegmentName": "4-5",
+            "SizeMm": "1"
+          },
+          {
+            "SegmentName": "6-7",
+            "SizeMm": "2"
+          },
+          {
+            "SegmentName": "",
+            "SizeMm": ""
+          }
+        ],
+        "IsLigamentous": false,
+        "Sequestration": "с секвестрацией",
+        "Location": "Парамедианная левая",
+        "Chronicity": "Свежая",
+        "Bulging": "Без выбухания",
+        "Modic": "1",
+        "Osteophytes": "2",
+        "KPP": "3",
+        "Schmorl": "4",
+        "Hemangiomas": "5"
+      },
+      "Concomitant": "не пристствют - здоров"
+    },
+    "Treatment": {
+      "CourseType": "КУРС № 1",
+      "Coordinator": "Коордмнатор №1",
+      "Procedures": [
+        "High Intensive Laser Therapy",
+        "Ударно-волновая терапия",
+        "ИРТ"
+      ],
+      "Injections": [
+        {
+          "InjDate": "03.06.2026",
+          "DrugID": 0,
+          "DrugName": "PRP-терапия (1 пробирка)"
+        },
+
+      {
+        "InjDate": "08.06.2026",
+        "DrugID": 0,
+        "DrugName": "SVF-терапия"
+      },
+      {
+        "InjDate": "17.06.2026",
+        "DrugID": 0,
+        "DrugName": "SVF-терапия"
+      }
+    ],
+    "Medications": [
+      {
+        "DrugID": 0,
+        "DrugName": "Мидокалм 150 мг",
+        "Regimen": "1 раз"
+      },
+      {
+        "DrugID": 0,
+        "DrugName": "Нимесил 100 мг",
+        "Regimen": "4 раза"
+      },
+      {
+        "DrugID": 0,
+        "DrugName": "Дексаметазон 4 мг/мл",
+        "Regimen": "3 hf"
+      }
+    ],
+    "Recommendations": [
+      "Соблюдение диеты",
+      "Психоэмоциональный покой",
+      "Сдать ОАК"
+    ],
+    "LfkPerWeek": "1 ",
+    "WalkingSteps": "2",
+    "AdditionalRecs": "",
+    "NextMriDate": "22.11.2025"
+  }
+}
