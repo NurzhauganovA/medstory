@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: medstory-backend
+    container_name: medstory-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: sqlite:////data/medstory.db
+      ASSETS_DIR: /app/assets
+      DEBUG: "false"
+    volumes:
+      - medstory_db:/data
+      - medstory_pdfs:/app/generated_pdfs
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health').status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: medstory-frontend
+    container_name: medstory-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  medstory_db:
+  medstory_pdfs:

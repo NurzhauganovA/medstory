@@ -10,8 +10,11 @@ class Settings(BaseSettings):
     debug: bool = True
     database_url: str = "sqlite:///./medstory.db"
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
-    pdf_template_path: Path = Path(__file__).resolve().parents[2] / "????????????_?????_????????.pdf"
+    pdf_template_path: Path = Path(__file__).resolve().parents[2] / "АМБУЛАТОРНАЯ_КАРТА_ПАЦИЕНТА.pdf"
     generated_pdfs_dir: Path = Path(__file__).resolve().parents[1] / "generated_pdfs"
+    # Каталог с изображениями тела (front/back) для карты в PDF.
+    # В Docker переопределяется переменной ASSETS_DIR=/app/assets.
+    assets_dir: Path = Path(__file__).resolve().parents[2] / "frontend/public/assets"
 
 
 settings = Settings()

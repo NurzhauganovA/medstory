@@ -1,5 +1,6 @@
 import { FieldInput, FieldSelect, FieldTextarea, TagSelect } from "../ui/Fields";
 import type { FormSchema, MedicalCardData } from "../../types";
+import { normalizeTreatmentProcedures } from "../../types";
 
 interface StepProps {
   data: MedicalCardData;
@@ -33,9 +34,19 @@ export function Step5Treatment({ data, options, onChange }: StepProps) {
 
       <TagSelect
         label="Процедуры"
-        values={t.procedures}
+        values={normalizeTreatmentProcedures(t.procedures).map((p) => p.name)}
         options={options.procedures ?? []}
-        onChange={(v) => setTreatment({ procedures: v })}
+        onChange={(names) =>
+          setTreatment({
+            procedures: names.map((name) => ({
+              id: `tp-${name}`,
+              name,
+              date: null,
+              dose: null,
+              drug_name: null,
+            })),
+          })
+        }
       />
 
       <TagSelect

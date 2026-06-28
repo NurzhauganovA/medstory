@@ -115,7 +115,26 @@ class DiagnosisBlock(BaseModel):
     icd10_list: list[Icd10Entry] = Field(default_factory=list)
     full_description: str | None = None
     mri: MriBlock = Field(default_factory=MriBlock)
+    pathology_rows: list[dict[str, Any]] = Field(default_factory=list)
+    body_map_markers: list[dict[str, Any]] = Field(default_factory=list)
     concomitant: str | None = None
+
+
+class TreatmentProcedure(BaseModel):
+    id: str
+    name: str
+    date: str | None = None
+    dose: str | None = None
+    drug_name: str | None = None
+
+
+class BodyMapProcedure(BaseModel):
+    id: str
+    procedure_name: str
+    procedure_date: str | None = None
+    dose: str | None = None
+    drug_name: str | None = None
+    notes: str | None = None
 
 
 class InjectionEntry(BaseModel):
@@ -130,10 +149,27 @@ class MedicationEntry(BaseModel):
     regimen: str | None = None
 
 
-class TreatmentBlock(BaseModel):
+class TreatmentCourse(BaseModel):
+    id: str
+    number: int = 1
     course_type: str | None = None
     coordinator: str | None = None
-    procedures: list[str] = Field(default_factory=list)
+    start_date: str | None = None
+    end_date: str | None = None
+    next_mri_date: str | None = None
+    procedures: list[TreatmentProcedure | str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
+    lfk_per_week: str | None = None
+    walking_steps: str | None = None
+    additional_recs: str | None = None
+
+
+class TreatmentBlock(BaseModel):
+    courses: list[TreatmentCourse] = Field(default_factory=list)
+    active_course_id: str | None = None
+    course_type: str | None = None
+    coordinator: str | None = None
+    procedures: list[TreatmentProcedure | str] = Field(default_factory=list)
     injections: list[InjectionEntry] = Field(default_factory=list)
     medications: list[MedicationEntry] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
@@ -192,6 +228,10 @@ class PatientBase(BaseModel):
     phone: str | None = None
     email: str | None = None
     birth_date: date | None = None
+    gender: str | None = None
+    residence: str | None = None
+    workplace: str | None = None
+    insurance_company: str | None = None
 
 
 class PatientCreate(PatientBase):
@@ -204,6 +244,10 @@ class PatientUpdate(BaseModel):
     phone: str | None = None
     email: str | None = None
     birth_date: date | None = None
+    gender: str | None = None
+    residence: str | None = None
+    workplace: str | None = None
+    insurance_company: str | None = None
 
 
 class PatientRead(PatientBase):
@@ -211,6 +255,42 @@ class PatientRead(PatientBase):
 
     id: int
     created_at: datetime
+
+
+class PatientListItem(PatientRead):
+    pass
+
+
+class PatientListResponse(BaseModel):
+    items: list[PatientListItem]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+
+
+class PatientVisitItem(BaseModel):
+    id: int
+    medical_card_id: int | None = None
+    visit_date: date | None = None
+    status: str
+    doctor_name: str | None = None
+    diagnosis: str | None = None
+    pain_vas: int | None = None
+
+
+class PatientDetailResponse(BaseModel):
+    patient: PatientRead
+    latest_card_id: int | None = None
+    latest_card_step: int = 1
+    active_card_id: int | None = None
+    visits: list[PatientVisitItem]
+
+
+class PatientPrintResponse(BaseModel):
+    filename: str
+    download_url: str
+    medical_card_id: int
 
 
 class AppointmentBase(BaseModel):

@@ -1,0 +1,28 @@
+# VCS / IDE
+.git
+.gitignore
+.idea
+.vscode
+*.md
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/.venv/
+**/venv/
+backend/.venv/
+backend/medstory.db
+backend/generated_pdfs/
+backend/**/generated_pdfs/
+
+# Node
+**/node_modules/
+frontend/dist/
+
+# Локальные артефакты
+.tmp/
+ui/
+*.pdf
+*.docx
+data.json
+.~lock.*

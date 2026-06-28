@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+    @page {
+        size: A4;
+        margin: 12mm 12mm 16mm 12mm;
+        @bottom-left  { content: "{{ footer }}"; font-size: 7pt; color: #888; }
+        @bottom-right { content: "Стр. " counter(page) " / " counter(pages); font-size: 7pt; color: #888; }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+        font-family: "DejaVu Sans", Arial, sans-serif;
+        font-size: 9pt;
+        color: #111;
+        line-height: 1.35;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ---- Шапка EXPERT NEURO ---- */
+    .doc-header {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+    .doc-header td {
+        border: 0.6pt solid #000;
+        padding: 6px 8px;
+        vertical-align: middle;
+        font-size: 6.6pt;
+        line-height: 1.25;
+    }
+    .doc-header .logo {
+        text-align: center;
+        font-weight: bold;
+        font-size: 18pt;
+        color: #1f3b73;
+        letter-spacing: 1px;
+        width: 26%;
+    }
+    .doc-header .org { width: 37%; }
+    .doc-header .reg { width: 37%; }
+
+    .doc-title {
+        text-align: center;
+        font-size: 14pt;
+        font-weight: bold;
+        margin: 12px 0 2px;
+        color: #000;
+    }
+    .doc-sub { text-align: center; font-size: 10pt; margin: 0 0 2px; }
+    .doc-sub2 { text-align: center; font-size: 10.5pt; font-weight: bold; margin: 4px 0 10px; }
+
+    /* ---- Серые полосы-разделы (как в форме 052/у) ---- */
+    .band {
+        background: #dcdcdc;
+        border: 0.6pt solid #000;
+        text-align: center;
+        font-weight: bold;
+        font-size: 11pt;
+        padding: 5px 6px;
+        margin: 14px 0 6px;
+        page-break-after: avoid;
+    }
+    .band.first { margin-top: 4px; }
+
+    /* ---- Таблицы данных ---- */
+    table.data {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 6px;
+        page-break-inside: auto;
+    }
+    table.data th, table.data td {
+        border: 0.6pt solid #000;
+        padding: 4px 6px;
+        vertical-align: top;
+        font-size: 8.6pt;
+        text-align: left;
+    }
+    /* key/value таблица */
+    table.kv th {
+        background: #f2f2f2;
+        font-weight: bold;
+        width: 34%;
+        color: #111;
+    }
+    /* грид-таблица с заголовком */
+    table.grid thead th {
+        background: #dcdcdc;
+        font-weight: bold;
+        text-align: center;
+        font-size: 8pt;
+    }
+    table.grid td { text-align: center; font-size: 8pt; }
+    table.grid td.left { text-align: left; }
+
+    .muted { color: #555; }
+    .small { font-size: 8pt; }
+    .sign { font-style: italic; color: #444; text-align: center; margin-top: 8px; font-size: 8.5pt; }
+
+    .page-break { page-break-before: always; }
+    .avoid-break { page-break-inside: avoid; }
+
+    h3.sub { font-size: 9.5pt; margin: 8px 0 4px; color: #333; page-break-after: avoid; }
+
+    /* ---- Карта тела ---- */
+    .bodymap { width: 100%; border-collapse: collapse; margin-top: 6px; page-break-inside: avoid; }
+    .bodymap td { width: 50%; text-align: center; vertical-align: top; padding: 0 6px; }
+    .bodymap .cap { font-weight: bold; font-size: 9.5pt; margin-bottom: 4px; }
+    .body-box {
+        position: relative;
+        display: inline-block;
+        width: 150px;
+        height: 390px;
+        border: 0.6pt solid #cbd5e1;
+        background: #fff;
+    }
+    .body-box img { width: 150px; height: 390px; display: block; }
+    .marker {
+        position: absolute;
+        width: 14px; height: 14px;
+        background: #d11; border: 1.6px solid #fff;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 0 0.6px #900;
+    }
+    .marker.circle { border-radius: 50%; }
+    .marker.diamond { transform: translate(-50%, -50%) rotate(45deg); border-radius: 1px; }
+    .marker.square { border-radius: 0; }
+    .marker-num {
+        position: absolute;
+        font-size: 8.5pt; font-weight: bold; color: #b91c1c;
+        transform: translate(9px, -16px);
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    }
+
+    ul.recs { padding-left: 16px; margin: 4px 0; }
+    ul.recs li { margin-bottom: 3px; font-size: 8.8pt; }
+</style>
+</head>
+<body>
+
+    <!-- ============ ШАПКА + ПАСПОРТНАЯ ЧАСТЬ ============ -->
+    <table class="doc-header">
+        <tr>
+            <td class="org">
+                <b>Қазақстан Республикасы Денсаулық сақтау министрлігі</b><br>
+                Министерство здравоохранения Республики Казахстан<br><br>
+                <b>Ұйымның атауы</b> / Наименование организации<br>
+                ТОО «EXPERT NEURO NS»
+            </td>
+            <td class="logo">EXPERT<br>NEURO</td>
+            <td class="reg">
+                Медицинская документация. Утверждена приказом и.о. Министра
+                здравоохранения Республики Казахстан от 30 октября 2020 года
+                № ҚР ДСМ-175/2020.<br>
+                Форма 052/у — в редакции приказа Министра здравоохранения РК
+                от 01.07.2022 № ҚР ДСМ-62.
+            </td>
+        </tr>
+    </table>
+
+    <div class="doc-title">ФОРМА № 052/у — «Медицинская карта амбулаторного пациента»</div>
+    <div class="doc-sub">№ {{ card_number }}</div>
+    <div class="doc-sub2">Общая часть. Паспортные данные</div>
+
+    <table class="data kv">
+        <tr><th>1. ИИН</th><td>{{ p.iin | fmt }}</td></tr>
+        <tr><th>2. Ф.И.О. (при его наличии)</th><td>{{ p.full_name | fmt }}</td></tr>
+        <tr><th>3. Дата рождения</th><td>{{ p.birth_date | fmt }}</td></tr>
+        <tr><th>4. Пол</th><td>{{ p.gender | fmt }}</td></tr>
+        <tr><th>5. Возраст</th><td>{{ age | fmt }}</td></tr>
+        <tr><th>6. Национальность</th><td>{{ p.nationality | fmt }}</td></tr>
+        <tr><th>7. Житель</th><td>{{ p.residence | fmt }}</td></tr>
+        <tr><th>8. Гражданство</th><td>{{ p.citizenship | fmt }}</td></tr>
+        <tr><th>9. Адрес проживания</th><td>{{ p.address | fmt }}</td></tr>
+        <tr><th>10. Место работы / учёбы / детского учреждения</th><td>{{ p.workplace | fmt }}</td></tr>
+        <tr><th>Должность / Образование</th><td>{{ p.position | fmt }} / {{ p.education | fmt }}</td></tr>
+        <tr><th>11. Страховая компания, № полиса</th><td>{{ p.insurance_company | fmt }}</td></tr>
+        <tr><th>12. Тип возмещения страхования</th><td>{{ p.insurance_type | fmt }}</td></tr>
+        <tr><th>13. Социальный статус</th><td>{{ p.social_status | fmt }}</td></tr>
+        <tr><th>14. Повод обращения</th><td>{{ p.visit_reason | fmt }}</td></tr>
+        <tr><th>15. Ф.И.О. врача</th><td>{{ p.doctor_name | fmt }}</td></tr>
+        <tr><th>16. Ф.И.О. среднего медицинского работника</th><td>{{ p.nurse_name | fmt }}</td></tr>
+        <tr><th>17. Ф.И.О. координатора по лечению</th><td>{{ p.coordinator_name | fmt }}</td></tr>
+        <tr><th>18. Дата первичного обращения</th><td>{{ (p.primary_visit_date or p.visit_date) | fmt }}</td></tr>
+        <tr><th>19. Дата завершения лечебного курса</th><td>{{ p.course_end_date | fmt }}</td></tr>
+        <tr><th>Филиал / контакты</th><td>{{ p.branch | fmt }} · {{ p.phone | fmt }} · {{ p.email | fmt }}</td></tr>
+    </table>
+
+    <!-- ============ ЖАЛОБЫ И АНАМНЕЗ ============ -->
+    <div class="page-break"></div>
+    <div class="band first">ЖАЛОБЫ ПАЦИЕНТА и ANAMNESIS MORBI</div>
+    <table class="data kv">
+        <tr><th>Со слов пациента</th><td>{{ a.patient_words | fmt }}</td></tr>
+        <tr><th>Когда началось и с чем связывает начало заболевания</th>
+            <td>{{ a.onset_reason | fmt }}{% if a.onset_association %} · {{ a.onset_association }}{% endif %}</td></tr>
+        <tr><th>Последнее обострение и с чем его связывает</th>
+            <td>{{ a.last_exacerbation | fmt }}{% if a.exacerbation_reason %} · {{ a.exacerbation_reason }}{% endif %}</td></tr>
+    </table>
+
+    <table class="data kv">
+        <tr><th>Боль</th><td>{{ pain_present | fmt }}</td></tr>
+        <tr><th>Интенсивность / длительность</th><td>{{ pain.intensity | fmt }} · {{ pain.duration | fmt }}</td></tr>
+        <tr><th>Локализация боли</th><td>{{ pain.localization | fmt }}</td></tr>
+        <tr><th>Характер боли</th><td>{{ pain.character | fmt }}</td></tr>
+        <tr><th>Периодичность боли</th><td>{{ pain.frequency | fmt }}</td></tr>
+        <tr><th>Что провоцирует боль</th><td>{{ provokes | fmt }}</td></tr>
+        <tr><th>Что купирует боль</th><td>{{ relieves | fmt }}</td></tr>
+        <tr><th>Онемение</th><td>{{ a.numbness | fmt }}</td></tr>
+        <tr><th>Текущее состояние</th><td>{{ a.current_state | fmt }}</td></tr>
+        <tr><th>Проведённое ранее лечение</th><td>{{ a.previous_treatment | fmt }}</td></tr>
+    </table>
+
+    <div class="band">ANAMNESIS VITAE</div>
+    <table class="data kv">
+        <tr><th>Диспансерный учёт</th><td>{{ vitae.dispensary_registration | fmt }}</td></tr>
+        <tr><th>Контакты лечащих врачей</th><td>{{ vitae.doctors_contacts | fmt }}</td></tr>
+        <tr><th>Группа крови + резус-фактор</th><td>{{ vitae.blood_type | fmt }}</td></tr>
+        <tr><th>Сопутствующие (хронические) заболевания</th><td>{{ vitae.concomitant_diseases | fmt }}</td></tr>
+        <tr><th>Перенесённые травмы и операции</th><td>{{ vitae.past_traumas_surgeries | fmt }}</td></tr>
+        <tr><th>Профилактические мероприятия (прививки)</th><td>{{ vitae.preventive_measures | fmt }}</td></tr>
+        <tr><th>Антропометрические данные (вес и рост)</th><td>{{ vitae.anthropometry | fmt }}</td></tr>
+        <tr><th>Аллергические реакции (код МКБ, наименование)</th><td>{{ vitae.allergies | fmt }}</td></tr>
+        <tr><th>Вредные привычки и риски для здоровья</th><td>{{ vitae.bad_habits | fmt }}</td></tr>
+    </table>
+
+    <div class="band">ИНСТРУМЕНТАЛЬНЫЕ / ЛАБОРАТОРНЫЕ ИССЛЕДОВАНИЯ</div>
+    <table class="data kv">
+        <tr><th>Результаты</th><td>{{ instrumental | fmt }}</td></tr>
+    </table>
+    <div class="sign">Данная выше информация заполнена со слов пациента. &nbsp;&nbsp; Подпись пациента: ______________________</div>
+
+    <!-- ============ МИОФАСЦИАЛЬНАЯ ДИАГНОСТИКА ============ -->
+    <div class="page-break"></div>
+    <div class="band first">МИОФАСЦИАЛЬНАЯ ДИАГНОСТИКА</div>
+    <table class="data kv">
+        <tr><th>Гипертонус мышц</th><td>{{ diag.hypertonus | fmt }}</td></tr>
+        <tr><th>Гипотонус мышц</th><td>{{ diag.hypotonus | fmt }}</td></tr>
+        <tr><th>Ригидность мышц (укорочение)</th><td>{{ diag.rigidity | fmt }}</td></tr>
+    </table>
+    <table class="data kv">
+        <tr><th>Тест Ласега</th><td>правая {{ diag.lasseg_right | fmt }}°, левая {{ diag.lasseg_left | fmt }}°</td></tr>
+        <tr><th>Тест Леррея (сидя)</th><td>{{ diag.lerrey_test | fmt }}</td></tr>
+        <tr><th>Другие тесты позвоночника</th><td>{{ diag.other_spine_tests | fmt }}</td></tr>
+    </table>
+
+    <table class="data grid">
+        <thead>
+            <tr><th style="width:16%">Сустав</th><th style="width:18%">Сгибание (лев/прав)</th>
+                <th style="width:18%">Разгибание (лев/прав)</th><th>Дополнительные движения</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Коленный</td>
+                <td>{{ diag.knee_flexion_left | fmt }} / {{ diag.knee_flexion_right | fmt }}</td>
+                <td>{{ diag.knee_extension_left | fmt }} / {{ diag.knee_extension_right | fmt }}</td>
+                <td class="left">—</td>
+            </tr>
+            <tr>
+                <td>Тазобедренный</td>
+                <td>{{ diag.hip_flexion | fmt }}</td>
+                <td>—</td>
+                <td class="left">нар.рот: {{ diag.hip_ext_rotation | fmt }}; вн.рот: {{ diag.hip_int_rotation | fmt }};
+                    прив: {{ diag.hip_adduction | fmt }}; отв: {{ diag.hip_abduction | fmt }}</td>
+            </tr>
+            <tr>
+                <td>Плечевой</td>
+                <td>{{ diag.shoulder_flexion | fmt }}</td>
+                <td>{{ diag.shoulder_extension | fmt }}</td>
+                <td class="left">отв: {{ diag.shoulder_abduction | fmt }}; супин: {{ diag.shoulder_supination | fmt }};
+                    пронац: {{ diag.shoulder_pronation | fmt }}; гор.прив: {{ diag.shoulder_horiz_adduction | fmt }};
+                    гор.отв: {{ diag.shoulder_horiz_abduction | fmt }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if diag.additional_tests %}
+    <table class="data grid">
+        <thead><tr><th style="width:40%">Сустав / мышца</th><th>Тест / результат</th></tr></thead>
+        <tbody>
+        {% for t in diag.additional_tests %}
+            <tr><td class="left">{{ t.muscle_joint | fmt }}</td><td class="left">{{ t.test_value | fmt }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <table class="data kv">
+        <tr><th>Паттерны ходьбы и положение тела</th><td>{{ diag.walking_pattern | fmt }}</td></tr>
+        <tr><th>Визуально-аналоговая шкала боли (ВАШ)</th><td>{{ diag.pain_vas | fmt }} / 10</td></tr>
+        <tr><th>Влияние на качество жизни</th><td>{{ diag.quality_of_life | fmt }} / 10</td></tr>
+    </table>
+
+    <!-- ============ ЗАКЛЮЧЕНИЕ ВРАЧА ============ -->
+    <div class="page-break"></div>
+    <div class="band first">ЗАКЛЮЧЕНИЕ ВРАЧА КЛИНИКИ «EXPERT NEURO»</div>
+
+    <h3 class="sub">Предварительный диагноз (МКБ-10):</h3>
+    <table class="data grid">
+        <thead><tr><th style="width:18%">Код МКБ-10</th><th>Наименование</th></tr></thead>
+        <tbody>
+        {% if diagnosis.icd10_list %}
+            {% for e in diagnosis.icd10_list %}
+            <tr><td>{{ e.code | fmt }}</td><td class="left">{{ e.description | fmt }}</td></tr>
+            {% endfor %}
+        {% else %}
+            <tr><td>—</td><td class="left">—</td></tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    {% if diagnosis.full_description %}
+    <table class="data kv"><tr><th>Полное описание</th><td>{{ diagnosis.full_description | fmt }}</td></tr></table>
+    {% endif %}
+
+    {% if pathology %}
+    <h3 class="sub">Данные МРТ:</h3>
+    <table class="data grid">
+        <thead><tr>
+            <th>Тип</th><th>Сегмент</th><th>Размер, мм</th><th>Секвестрация</th>
+            <th>Локализация</th><th>Выбухание</th><th>Modic</th>
+        </tr></thead>
+        <tbody>
+        {% for r in pathology %}
+            <tr>
+                <td>{{ r.hernia_type | fmt }}</td><td>{{ r.segment_name | fmt }}</td><td>{{ r.size_mm | fmt }}</td>
+                <td>{{ r.sequestration | fmt }}</td><td>{{ r.location | fmt }}</td>
+                <td>{{ r.bulging | fmt }}</td><td>{{ r.modic | fmt }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if mri_extra %}
+    <table class="data kv">
+        {% for label, value in mri_extra %}
+        <tr><th>{{ label }}</th><td>{{ value | fmt }}</td></tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <table class="data kv">
+        <tr><th>Сопутствующие заболевания, операции и травмы</th><td>{{ diagnosis.concomitant | fmt }}</td></tr>
+    </table>
+
+    <!-- ============ КАРТА ТЕЛА ============ -->
+    <div class="band">КАРТА ТЕЛА И ЛОКАЛИЗАЦИЯ</div>
+    <table class="bodymap">
+        <tr>
+            <td>
+                <div class="cap">СПЕРЕДИ</div>
+                <div class="body-box">
+                    <img src="{{ front_img }}" alt="front">
+                    {% for m in front_markers %}
+                        <div class="marker {{ m.tool or 'circle' }}" style="left: {{ m.x }}%; top: {{ m.y }}%;"></div>
+                        <div class="marker-num" style="left: {{ m.x }}%; top: {{ m.y }}%;">{{ m.num }}</div>
+                    {% endfor %}
+                </div>
+            </td>
+            <td>
+                <div class="cap">СЗАДИ</div>
+                <div class="body-box">
+                    <img src="{{ back_img }}" alt="back">
+                    {% for m in back_markers %}
+                        <div class="marker {{ m.tool or 'circle' }}" style="left: {{ m.x }}%; top: {{ m.y }}%;"></div>
+                        <div class="marker-num" style="left: {{ m.x }}%; top: {{ m.y }}%;">{{ m.num }}</div>
+                    {% endfor %}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    {% if markers %}
+    <h3 class="sub">Локализация и назначенные процедуры:</h3>
+    <table class="data grid">
+        <thead><tr>
+            <th style="width:5%">№</th><th style="width:8%">Сторона</th>
+            <th style="width:24%">Локализация / описание</th>
+            <th style="width:24%">Процедура (доза)</th><th style="width:20%">Препарат</th><th>Примечание</th>
+        </tr></thead>
+        <tbody>
+        {% for m in markers %}
+            {% if m._procs %}
+                {% for proc in m._procs %}
+                <tr>
+                    {% if loop.first %}
+                    <td rowspan="{{ m._procs | length }}">{{ m.num }}</td>
+                    <td rowspan="{{ m._procs | length }}">{{ m.side }}</td>
+                    <td rowspan="{{ m._procs | length }}" class="left">{{ m.description | fmt }}</td>
+                    {% endif %}
+                    <td class="left">{{ proc.procedure_name | fmt }}{% if proc.dose %} ({{ proc.dose }}){% endif %}</td>
+                    <td class="left">{{ proc.drug_name | fmt }}</td>
+                    <td class="left">{{ proc.notes | fmt }}{% if proc.procedure_date %} · {{ proc.procedure_date }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>{{ m.num }}</td><td>{{ m.side }}</td><td class="left">{{ m.description | fmt }}</td>
+                    <td class="left">—</td><td class="left">—</td><td class="left">—</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- ============ ЛЕЧЕНИЕ — КУРСЫ ============ -->
+    {% for course in courses %}
+    <div class="page-break"></div>
+    <div class="band first">ЛЕЧЕНИЕ — КУРС № {{ course.number | fmt }}{% if course.course_type %} · {{ course.course_type }}{% endif %}</div>
+
+    <table class="data kv">
+        <tr><th>Тип курса</th><td>{{ course.course_type | fmt }}</td></tr>
+        <tr><th>Координатор по лечению</th><td>{{ course.coordinator | fmt }}</td></tr>
+        <tr><th>Дата начала / окончания</th><td>{{ course.start_date | fmt }} — {{ course.end_date | fmt }}</td></tr>
+        <tr><th>Дата контрольного МРТ</th><td>{{ course.next_mri_date | fmt }}</td></tr>
+    </table>
+
+    {% if course._procs %}
+    <h3 class="sub">Назначенные процедуры:</h3>
+    <table class="data grid">
+        <thead><tr>
+            <th style="width:5%">№</th><th>Процедура</th><th style="width:16%">Дата</th>
+            <th style="width:12%">Доза</th><th style="width:24%">Препарат</th>
+        </tr></thead>
+        <tbody>
+        {% for proc in course._procs %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td class="left">{{ proc.name | fmt }}</td>
+                <td>{{ proc.date | fmt }}</td>
+                <td>{{ proc.dose | fmt }}</td>
+                <td class="left">{{ proc.drug_name | fmt }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <div class="band">РЕКОМЕНДАЦИИ</div>
+    {% if course.recommendations %}
+    <ul class="recs">
+        {% for rec in course.recommendations %}<li>{{ rec }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    <table class="data kv">
+        <tr><th>ЛФК (раз в неделю)</th><td>{{ course.lfk_per_week | fmt }}</td></tr>
+        <tr><th>Ходьба (шагов в день)</th><td>{{ course.walking_steps | fmt }}</td></tr>
+        <tr><th>Дополнительные рекомендации</th><td>{{ course.additional_recs | fmt }}</td></tr>
+    </table>
+    {% endfor %}
+
+    {% if injections or medications %}
+    <div class="band">МЕДИКАМЕНТЫ И ИНЪЕКЦИИ</div>
+    {% if injections %}
+    <table class="data grid">
+        <thead><tr><th style="width:25%">Дата</th><th>Препарат (инъекция)</th></tr></thead>
+        <tbody>{% for i in injections %}<tr><td>{{ i.inj_date | fmt }}</td><td class="left">{{ i.drug_name | fmt }}</td></tr>{% endfor %}</tbody>
+    </table>
+    {% endif %}
+    {% if medications %}
+    <table class="data grid">
+        <thead><tr><th style="width:45%">Препарат</th><th>Схема приёма</th></tr></thead>
+        <tbody>{% for m in medications %}<tr><td class="left">{{ m.drug_name | fmt }}</td><td class="left">{{ m.regimen | fmt }}</td></tr>{% endfor %}</tbody>
+    </table>
+    {% endif %}
+    {% endif %}
+
+</body>
+</html>
