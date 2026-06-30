@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from datetime import date, datetime, time
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import init_db
-from app.routers import appointments, bookings, icd10, medical_cards, patients, schedule
+from app.routers import appointments, auth, bookings, icd10, medical_cards, patients, schedule
+from app.security import get_current_user
 
 
 def create_app() -> FastAPI:
@@ -21,16 +22,22 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(patients.router, prefix="/api")
-    app.include_router(appointments.router, prefix="/api")
-    app.include_router(medical_cards.router, prefix="/api")
-    app.include_router(schedule.router, prefix="/api")
-    app.include_router(bookings.router, prefix="/api")
-    app.include_router(icd10.router, prefix="/api")
+    # Аутентификация — открыта (логин). Профиль/управление защищены внутри роутера.
+    app.include_router(auth.router, prefix="/api")
+
+    # Остальные модули требуют авторизации (валидный токен).
+    protected = [Depends(get_current_user)]
+    app.include_router(patients.router, prefix="/api", dependencies=protected)
+    app.include_router(appointments.router, prefix="/api", dependencies=protected)
+    app.include_router(medical_cards.router, prefix="/api", dependencies=protected)
+    app.include_router(schedule.router, prefix="/api", dependencies=protected)
+    app.include_router(bookings.router, prefix="/api", dependencies=protected)
+    app.include_router(icd10.router, prefix="/api", dependencies=protected)
 
     @app.on_event("startup")
     def on_startup() -> None:
         init_db()
+        seed_users()
         seed_demo_data()
 
     @app.get("/api/health")
@@ -66,6 +73,37 @@ def _backfill_patient_profiles(db) -> None:
             patient.residence = patient.residence or "Город"
             patient.workplace = patient.workplace or "—"
             patient.insurance_company = patient.insurance_company or "ФСМС"
+
+
+def seed_users() -> None:
+    """Учётные записи по умолчанию (создаются один раз, если пользователей нет)."""
+    from app.database import SessionLocal
+    from app.models import User
+    from app.schemas.auth import UserRole
+    from app.security import hash_password
+
+    db = SessionLocal()
+    try:
+        if db.query(User).count() > 0:
+            return
+        defaults = [
+            ("admin", "Администратор системы", UserRole.admin, "admin123"),
+            ("doctor", "Омаров Даулет Асхатович", UserRole.doctor, "doctor123"),
+            ("nurse", "Алиева Айгерим Бериковна", UserRole.nurse, "nurse123"),
+        ]
+        for username, full_name, role, password in defaults:
+            db.add(
+                User(
+                    username=username,
+                    full_name=full_name,
+                    role=role.value,
+                    is_active=True,
+                    hashed_password=hash_password(password),
+                )
+            )
+        db.commit()
+    finally:
+        db.close()
 
 
 def seed_demo_data() -> None:

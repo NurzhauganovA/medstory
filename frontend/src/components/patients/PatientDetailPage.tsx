@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../../api/client";
+import { useAuth } from "../../auth/AuthContext";
+import { canEdit } from "../../auth/types";
 import { BackIcon } from "../icons";
 import type { PatientDetailResponse, PatientVisitItem } from "../../types";
 
@@ -44,6 +46,8 @@ export function PatientDetailPage({
   onStartVisit,
   onContinueVisit,
 }: PatientDetailPageProps) {
+  const { user } = useAuth();
+  const editable = canEdit(user?.role);
   const [detail, setDetail] = useState<PatientDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [printing, setPrinting] = useState(false);
@@ -136,6 +140,7 @@ export function PatientDetailPage({
   };
 
   const handleVisitOpen = (visit: PatientVisitItem) => {
+    if (!editable) return;
     if (!visit.medical_card_id) return;
     if (isActiveVisit(visit.status)) {
       onContinueVisit(patientId, visit.medical_card_id, detail?.patient.full_name ?? "");
@@ -184,7 +189,7 @@ export function PatientDetailPage({
             >
               {printing ? "Формирование…" : "Печать последнего приёма"}
             </button>
-            {hasActiveVisit ? (
+            {editable && hasActiveVisit && (
               <>
                 <button
                   type="button"
@@ -202,7 +207,8 @@ export function PatientDetailPage({
                   Продолжить приём
                 </button>
               </>
-            ) : (
+            )}
+            {editable && !hasActiveVisit && (
               <button
                 type="button"
                 className="btn-form btn-form--primary"

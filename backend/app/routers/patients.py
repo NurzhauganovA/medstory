@@ -15,10 +15,15 @@ from app.schemas.medical_card import (
     PatientRead,
     PatientUpdate,
 )
+from app.schemas.auth import UserRole
+from app.security import require_roles
 from app.services.medical_card import PdfGeneratorService
 from app.services.patient import PatientService
 
 router = APIRouter(prefix="/patients", tags=["patients"])
+
+# Регистрировать пациентов и вести приём могут врач и администратор.
+require_editor = require_roles(UserRole.admin, UserRole.doctor)
 
 
 @router.get("", response_model=PatientListResponse)
@@ -32,7 +37,11 @@ def list_patients(
 
 
 @router.post("", response_model=PatientRead, status_code=status.HTTP_201_CREATED)
-def create_patient(payload: PatientCreate, db: Session = Depends(get_db)) -> PatientRead:
+def create_patient(
+    payload: PatientCreate,
+    db: Session = Depends(get_db),
+    _=Depends(require_editor),
+) -> PatientRead:
     return PatientService(db).create_patient(payload)
 
 
@@ -57,6 +66,7 @@ def update_patient(
     patient_id: int,
     payload: PatientUpdate,
     db: Session = Depends(get_db),
+    _=Depends(require_editor),
 ) -> PatientRead:
     service = PatientService(db)
     try:
@@ -66,7 +76,11 @@ def update_patient(
 
 
 @router.post("/{patient_id}/start-visit", response_model=MedicalCardRead)
-def start_patient_visit(patient_id: int, db: Session = Depends(get_db)) -> MedicalCardRead:
+def start_patient_visit(
+    patient_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_editor),
+) -> MedicalCardRead:
     service = PatientService(db)
     try:
         return service.start_visit(patient_id)
@@ -78,7 +92,11 @@ def start_patient_visit(patient_id: int, db: Session = Depends(get_db)) -> Medic
 
 
 @router.post("/{patient_id}/complete-visit", response_model=MedicalCardRead)
-def complete_patient_visit(patient_id: int, db: Session = Depends(get_db)) -> MedicalCardRead:
+def complete_patient_visit(
+    patient_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_editor),
+) -> MedicalCardRead:
     service = PatientService(db)
     try:
         return service.complete_active_visit(patient_id)

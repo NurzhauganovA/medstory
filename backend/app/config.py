@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     debug: bool = True
     database_url: str = "sqlite:///./medstory.db"
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    # --- Аутентификация (JWT) ---
+    # В production обязательно переопределить через переменную окружения SECRET_KEY.
+    secret_key: str = "CHANGE_ME_medstory_dev_secret_key_2026"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60 * 24  # 24 часа
     pdf_template_path: Path = Path(__file__).resolve().parents[2] / "АМБУЛАТОРНАЯ_КАРТА_ПАЦИЕНТА.pdf"
     generated_pdfs_dir: Path = Path(__file__).resolve().parents[1] / "generated_pdfs"
     # Каталог с изображениями тела (front/back) для карты в PDF.

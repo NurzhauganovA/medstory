@@ -12,9 +12,14 @@ from app.schemas.medical_card import (
     MedicalCardRead,
     MedicalCardUpdateStep,
 )
+from app.schemas.auth import UserRole
+from app.security import require_roles
 from app.services.medical_card import MedicalCardService, PdfGeneratorService
 
 router = APIRouter(prefix="/medical-cards", tags=["medical-cards"])
+
+# Создавать и редактировать медкарты могут только врач и администратор.
+require_editor = require_roles(UserRole.admin, UserRole.doctor)
 
 
 @router.get("/schema/form", response_model=FormSchemaResponse)
@@ -33,7 +38,11 @@ def list_medical_cards(
 
 
 @router.post("", response_model=MedicalCardRead, status_code=status.HTTP_201_CREATED)
-def create_medical_card(payload: MedicalCardCreate, db: Session = Depends(get_db)) -> MedicalCardRead:
+def create_medical_card(
+    payload: MedicalCardCreate,
+    db: Session = Depends(get_db),
+    _=Depends(require_editor),
+) -> MedicalCardRead:
     service = MedicalCardService(db)
     try:
         return service.create_card(payload)
@@ -55,6 +64,7 @@ def update_medical_card_step(
     card_id: int,
     payload: MedicalCardUpdateStep,
     db: Session = Depends(get_db),
+    _=Depends(require_editor),
 ) -> MedicalCardRead:
     """Сохранение данных текущего шага при нажатии «Далее» или «Назад»."""
     service = MedicalCardService(db)
@@ -65,7 +75,11 @@ def update_medical_card_step(
 
 
 @router.post("/{card_id}/complete", response_model=MedicalCardRead)
-def complete_medical_card(card_id: int, db: Session = Depends(get_db)) -> MedicalCardRead:
+def complete_medical_card(
+    card_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_editor),
+) -> MedicalCardRead:
     service = MedicalCardService(db)
     try:
         return service.complete_card(card_id)

@@ -10,6 +10,8 @@ services:
       DATABASE_URL: sqlite:////data/medstory.db
       ASSETS_DIR: /app/assets
       DEBUG: "false"
+      # В production замените на свой секрет: SECRET_KEY=$(openssl rand -hex 32)
+      SECRET_KEY: ${SECRET_KEY:-CHANGE_ME_medstory_dev_secret_key_2026}
     volumes:
       - medstory_db:/data
       - medstory_pdfs:/app/generated_pdfs

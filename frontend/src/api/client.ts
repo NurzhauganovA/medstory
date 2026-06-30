@@ -5,14 +5,30 @@ import type {
   ScheduleResponse,
   Specialist,
 } from "../types/schedule";
+import type {
+  LoginResponse,
+  User,
+  UserCreatePayload,
+  UserUpdatePayload,
+} from "../auth/types";
+import { authHeaders, clearToken } from "../auth/token";
 
 const BASE = "/api";
 
+function handleUnauthorized() {
+  clearToken();
+  window.dispatchEvent(new Event("auth:unauthorized"));
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json", ...init?.headers },
+    headers: { "Content-Type": "application/json", ...authHeaders(), ...init?.headers },
     ...init,
   });
+  if (response.status === 401) {
+    handleUnauthorized();
+    throw new Error("Сессия истекла. Войдите снова.");
+  }
   if (!response.ok) {
     const detail = await response.text();
     throw new Error(detail || `HTTP ${response.status}`);
@@ -22,6 +38,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  // --- Авторизация ---
+  login: (username: string, password: string) =>
+    request<LoginResponse>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    }),
+  getMe: () => request<User>("/auth/me"),
+  listUsers: () => request<User[]>("/auth/users"),
+  createUser: (payload: UserCreatePayload) =>
+    request<User>("/auth/users", { method: "POST", body: JSON.stringify(payload) }),
+  updateUser: (userId: number, payload: UserUpdatePayload) =>
+    request<User>(`/auth/users/${userId}`, { method: "PATCH", body: JSON.stringify(payload) }),
+  deleteUser: (userId: number) =>
+    request<void>(`/auth/users/${userId}`, { method: "DELETE" }),
+
   getFormSchema: () => request<FormSchema>("/medical-cards/schema/form"),
   searchIcd10: (q: string, limit = 20) => {
     const params = new URLSearchParams({ q, limit: String(limit) });
@@ -66,7 +97,11 @@ export const api = {
       `/patients/${patientId}/print-card`,
       { method: "POST" },
     );
-    const response = await fetch(`${BASE}/patients/${patientId}/pdf`);
+    const response = await fetch(`${BASE}/patients/${patientId}/pdf`, { headers: authHeaders() });
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new Error("Сессия истекла. Войдите снова.");
+    }
     if (!response.ok) {
       throw new Error("Не удалось скачать PDF");
     }
@@ -88,7 +123,11 @@ export const api = {
     await request<{ filename: string; download_url: string }>(`/medical-cards/${cardId}/generate-pdf`, {
       method: "POST",
     });
-    const response = await fetch(`${BASE}/medical-cards/${cardId}/pdf`);
+    const response = await fetch(`${BASE}/medical-cards/${cardId}/pdf`, { headers: authHeaders() });
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new Error("Сессия истекла. Войдите снова.");
+    }
     if (!response.ok) {
       throw new Error("Не удалось скачать PDF");
     }

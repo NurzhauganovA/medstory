@@ -1,8 +1,11 @@
 import { LogoIcon, NavIcon } from "../icons";
 import type { AppNavId } from "../../App";
+import type { UserRole } from "../../auth/types";
 
-const MAIN_NAV: { id: AppNavId | string; label: string; icon: string }[] = [
-  { id: "schedule", label: "Расписание", icon: "schedule" },
+type NavItem = { id: AppNavId | string; label: string; icon: string; nav?: AppNavId };
+
+const MAIN_NAV: NavItem[] = [
+  { id: "schedule", label: "Расписание", icon: "schedule", nav: "schedule" },
   { id: "waiting", label: "Лист ожидания", icon: "waiting" },
   { id: "admin", label: "Панель администратора", icon: "admin" },
   { id: "crm", label: "CRM", icon: "crm" },
@@ -10,19 +13,24 @@ const MAIN_NAV: { id: AppNavId | string; label: string; icon: string }[] = [
   { id: "work", label: "График работ", icon: "work" },
 ];
 
-const REGISTRY_NAV: { id: AppNavId | string; label: string; icon: string }[] = [
+const REGISTRY_NAV: NavItem[] = [
   { id: "appointments", label: "Приемы", icon: "appointments" },
-  { id: "patients", label: "Пациенты", icon: "patients" },
+  { id: "patients", label: "Пациенты", icon: "patients", nav: "patients" },
   { id: "specialists", label: "Специалисты", icon: "specialists" },
 ];
 
-const REPORT_NAV = [
+const REPORT_NAV: NavItem[] = [
   { id: "accounting", label: "Учет", icon: "accounting" },
   { id: "reports", label: "Отчеты", icon: "reports" },
 ];
 
+const ADMIN_NAV: NavItem[] = [
+  { id: "users", label: "Пользователи", icon: "admin", nav: "users" },
+];
+
 interface SidebarProps {
   activeNav: AppNavId;
+  role?: UserRole;
   onNavigate: (navId: AppNavId) => void;
 }
 
@@ -33,7 +41,7 @@ function NavSection({
   onNavigate,
 }: {
   title?: string;
-  items: typeof MAIN_NAV;
+  items: NavItem[];
   activeNav: AppNavId;
   onNavigate: (navId: AppNavId) => void;
 }) {
@@ -42,20 +50,14 @@ function NavSection({
       {title && <div className="sidebar__section-title">{title}</div>}
       <ul className="sidebar__list">
         {items.map((item) => {
-          const isPatients = item.id === "patients";
-          const isSchedule = item.id === "schedule";
-          const isActive =
-            (isPatients && activeNav === "patients") ||
-            (isSchedule && activeNav === "schedule");
-
+          const isActive = item.nav !== undefined && activeNav === item.nav;
           return (
             <li key={item.id}>
               <button
                 type="button"
                 className={`sidebar__link ${isActive ? "sidebar__link--active" : ""}`}
                 onClick={() => {
-                  if (isPatients) onNavigate("patients");
-                  if (isSchedule) onNavigate("schedule");
+                  if (item.nav) onNavigate(item.nav);
                 }}
               >
                 <span className="sidebar__link-icon">
@@ -71,7 +73,7 @@ function NavSection({
   );
 }
 
-export function Sidebar({ activeNav, onNavigate }: SidebarProps) {
+export function Sidebar({ activeNav, role, onNavigate }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
@@ -87,6 +89,14 @@ export function Sidebar({ activeNav, onNavigate }: SidebarProps) {
           onNavigate={onNavigate}
         />
         <NavSection title="Отчетность" items={REPORT_NAV} activeNav={activeNav} onNavigate={onNavigate} />
+        {role === "admin" && (
+          <NavSection
+            title="Администрирование"
+            items={ADMIN_NAV}
+            activeNav={activeNav}
+            onNavigate={onNavigate}
+          />
+        )}
       </nav>
     </aside>
   );
